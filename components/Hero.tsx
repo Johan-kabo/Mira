@@ -7,6 +7,11 @@ const CreateImageIcon = () => (
     </svg>
 )
 
+const LoadingSpinner = () => (
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+);
+
+
 interface HeroProps {
   content: {
     speechRelease: string;
@@ -19,27 +24,28 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ content }) => {
-  const [prompt, setPrompt] = useState(content.placeholder);
+  const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const handleGenerateImage = async () => {
      if (!prompt.trim()) {
-      setError('Please enter a prompt.');
+      setError('Veuillez entrer un prompt.');
       return;
     }
     setLoading(true);
     setError(null);
+    setImageUrl(null);
 
     try {
-      const imageUrl = await generateImage(prompt);
-      alert("Image generated successfully! In a real app, this would be displayed below.");
-      console.log(imageUrl);
+      const newImageUrl = await generateImage(prompt);
+      setImageUrl(newImageUrl);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred.');
+        setError('Une erreur inconnue est survenue.');
       }
     } finally {
       setLoading(false);
@@ -81,6 +87,21 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
         {error && <p className="text-red-400 mt-4">{error}</p>}
       </div>
       
+      <div className="mt-10 max-w-2xl mx-auto">
+        {loading && (
+          <div className="flex flex-col items-center justify-center p-8 bg-[#1c162d]/50 border border-white/10 rounded-2xl">
+            <LoadingSpinner />
+            <p className="text-gray-300 mt-4">Génération de votre chef-d'œuvre...</p>
+          </div>
+        )}
+        {imageUrl && !loading && (
+          <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-4">
+            <h2 className="text-2xl font-bold text-white mb-4">Votre résultat</h2>
+            <img src={imageUrl} alt={prompt} className="rounded-xl shadow-lg mx-auto max-w-full" />
+          </div>
+        )}
+      </div>
+
     </section>
   );
 };

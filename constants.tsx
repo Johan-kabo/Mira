@@ -114,9 +114,9 @@ export const translations = {
                 title: "Background Remover",
                 description: "Effortlessly remove image backgrounds in seconds with our advanced AI technology. Perfect for creating stunning visuals, professional presentations, or e-commerce product photos."
             },
-            api: {
-                title: "API Integration",
-                description: "For developers and businesses, our API offers seamless integration. Automate image generation for apps, websites, and creative workflows with ease."
+            image_to_prompt: {
+                title: "Image to Prompt",
+                description: "Upload an image and let our AI analyze it to generate a detailed, creative text prompt. Discover the magic behind the art."
             },
             uncrop: {
                 title: "Uncrop Images",
@@ -216,9 +216,9 @@ export const translations = {
                 title: "Suppresseur d'arrière-plan",
                 description: "Supprimez sans effort les arrière-plans d'images en quelques secondes grâce à notre technologie IA avancée. Parfait pour créer des visuels saisissants, des présentations professionnelles ou des photos de produits e-commerce."
             },
-            api: {
-                title: "Intégration API",
-                description: "Pour les développeurs et les entreprises, notre API offre une intégration transparente. Automatisez la génération d'images pour les applications, les sites web et les flux de travail créatifs en toute simplicité."
+            image_to_prompt: {
+                title: "Image vers Prompt",
+                description: "Téléchargez une image et laissez notre IA l'analyser pour générer un prompt textuel détaillé et créatif. Découvrez la magie derrière l'art."
             },
             uncrop: {
                 title: "Dé-recadrer les images",

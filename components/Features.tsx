@@ -8,7 +8,7 @@ interface FeaturesProps {
         subtitle: string;
         cards: {
             remover: { title: string; description: string };
-            api: { title: string; description: string };
+            image_to_prompt: { title: string; description: string };
             uncrop: { title: string; description: string };
             upscaler: { title: string; description: string };
         }
@@ -49,16 +49,15 @@ const Features: React.FC<FeaturesProps> = ({ onNavigate, content }) => {
                 </FeatureCard>
             </div>
              <div onClick={() => onNavigate('image-to-prompt')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
-                <FeatureCard title={content.cards.api.title} description={content.cards.api.description}>
-                    <div className="w-full h-full bg-black/20 flex flex-wrap items-center justify-center p-4 gap-4">
-                        <img src="https://picsum.photos/seed/icon-1/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-2/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-3/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-4/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-5/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-6/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-7/64/64" className="w-12 h-12 rounded-lg"/>
-                        <img src="https://picsum.photos/seed/icon-8/64/64" className="w-12 h-12 rounded-lg"/>
+                <FeatureCard title={content.cards.image_to_prompt.title} description={content.cards.image_to_prompt.description}>
+                     <div className="w-full h-full bg-black/20 flex items-center justify-center p-4 gap-2">
+                        <div className="w-2/5 h-full">
+                            <img src="https://picsum.photos/seed/art-for-prompt/300/400" alt="Artwork to generate prompt from" className="w-full h-full object-cover rounded-lg"/>
+                        </div>
+                        <div className="text-white text-3xl px-1">→</div>
+                        <div className="w-3/5 h-full bg-gray-900/70 rounded-lg p-3 text-xs text-gray-400 font-mono overflow-y-auto">
+                            "A highly detailed, photorealistic portrait of an old fisherman with deep wrinkles, a weathered face, and a thick white beard. He wears a yellow raincoat..."
+                        </div>
                     </div>
                 </FeatureCard>
             </div>
