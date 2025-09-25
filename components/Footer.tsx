@@ -6,7 +6,24 @@ const SocialIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </a>
 );
 
-const Footer: React.FC = () => {
+interface FooterProps {
+    navLinks: string[];
+    content: {
+        description: string;
+        quickLinks: string;
+        contact: string;
+        copyright: string;
+    }
+}
+
+const Footer: React.FC<FooterProps> = ({ navLinks, content }) => {
+  const links = [
+      { name: navLinks[0], href: '#feature'},
+      { name: navLinks[2], href: '#testimonial'},
+      { name: navLinks[4], href: '#faq'},
+      { name: navLinks[1], href: '#use-case'},
+      { name: navLinks[3], href: '#pricing'},
+  ];
   return (
     <footer className="bg-[#110e1b] text-gray-400 py-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -18,7 +35,7 @@ const Footer: React.FC = () => {
               </div>
               <span className="text-white text-2xl font-bold">Aiyaiya</span>
             </div>
-            <p className="max-w-md">Streamline Operations, Boost Productivity, and Drive Innovation with Our All-in-One Platform</p>
+            <p className="max-w-md">{content.description}</p>
             <div className="flex space-x-4 mt-6">
               <SocialIcon>X</SocialIcon>
               <SocialIcon>F</SocialIcon>
@@ -26,17 +43,15 @@ const Footer: React.FC = () => {
             </div>
           </div>
           <div>
-            <h4 className="text-white font-bold text-lg mb-4">Quick Links</h4>
+            <h4 className="text-white font-bold text-lg mb-4">{content.quickLinks}</h4>
             <ul className="space-y-2">
-              <li><a href="#feature" className="hover:text-white">Feature</a></li>
-              <li><a href="#testimonial" className="hover:text-white">Testimonial</a></li>
-              <li><a href="#faq" className="hover:text-white">FAQ</a></li>
-              <li><a href="#use-case" className="hover:text-white">Use Case</a></li>
-              <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
+              {links.map(link => (
+                  <li key={link.name}><a href={link.href} className="hover:text-white">{link.name}</a></li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold text-lg mb-4">Contact</h4>
+            <h4 className="text-white font-bold text-lg mb-4">{content.contact}</h4>
             <ul className="space-y-2">
               <li className="flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
@@ -50,7 +65,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div className="mt-12 border-t border-white/10 pt-8 text-center text-sm">
-          <p>&copy; 2024 Aiyaiya. All rights reserved.</p>
+          <p>{content.copyright}</p>
         </div>
       </div>
     </footer>

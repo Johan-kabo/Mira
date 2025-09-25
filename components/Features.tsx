@@ -3,6 +3,16 @@ import type { Page } from '../App';
 
 interface FeaturesProps {
     onNavigate: (page: Page) => void;
+    content: {
+        title: string;
+        subtitle: string;
+        cards: {
+            remover: { title: string; description: string };
+            api: { title: string; description: string };
+            uncrop: { title: string; description: string };
+            upscaler: { title: string; description: string };
+        }
+    }
 }
 
 const FeatureCard: React.FC<{ title: string; description: string; children: React.ReactNode }> = ({ title, description, children }) => {
@@ -18,52 +28,60 @@ const FeatureCard: React.FC<{ title: string; description: string; children: Reac
 };
 
 
-const Features: React.FC<FeaturesProps> = ({ onNavigate }) => {
+const Features: React.FC<FeaturesProps> = ({ onNavigate, content }) => {
   return (
     <section id="feature" className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white">Explore the powerful features behind our text-to-image generator</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
           <p className="text-gray-400 mt-4">
-            Our text-to-image generator is built with cutting-edge technology to deliver exceptional results. Whether you're a designer, content creator, or business owner, these features will elevate your creative process to the next level.
+            {content.subtitle}
           </p>
         </div>
         <div className="mt-16 grid md:grid-cols-2 gap-8">
             <div onClick={() => onNavigate('background-remover')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
-                <FeatureCard title="Background Remover" description="Effortlessly remove image backgrounds in seconds with our advanced AI technology. Perfect for creating stunning visuals, professional presentations, or e-commerce product photos.">
-                    <img src="https://picsum.photos/seed/cat-bg/600/400" alt="Cat with background" className="absolute inset-0 w-full h-full object-cover"/>
-                    <div className="absolute inset-0 w-1/2 h-full bg-cover bg-center" style={{backgroundImage: "url('https://picsum.photos/seed/cat-nobg/600/400')"}}></div>
+                <FeatureCard title={content.cards.remover.title} description={content.cards.remover.description}>
+                    <img src="https://picsum.photos/seed/cat-nobg/600/400" alt="Cat with background" className="absolute inset-0 w-full h-full object-cover"/>
+                    <div className="absolute inset-0 w-1/2 h-full bg-cover bg-no-repeat bg-center" style={{backgroundImage: "url('https://picsum.photos/seed/cat-bg/600/400')"}}></div>
                     <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white">
                     <div className="absolute top-1/2 -translate-y-1/2 -left-3.5 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-mono">&lt;&gt;</div>
                     </div>
                 </FeatureCard>
             </div>
-            <div onClick={() => onNavigate('image-to-prompt')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
-                <FeatureCard title="Image to Prompt" description="Have an image but don't know how to describe it? Upload your image and our AI will generate a detailed text prompt that you can use to create similar visuals.">
-                    <div className="w-full h-full bg-[#0d0b14] flex items-center justify-center p-4">
-                        <div className="flex items-center gap-4">
-                            <img src="https://picsum.photos/seed/api-img/200/200" className="rounded-lg w-24 h-24 object-cover" />
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                            <div className="bg-gray-800 p-2 rounded-md text-xs text-gray-300 w-40">"A golden retriever sitting in a lush green forest, sun filtering through the leaves..."</div>
-                        </div>
+             <div onClick={() => onNavigate('image-to-prompt')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
+                <FeatureCard title={content.cards.api.title} description={content.cards.api.description}>
+                    <div className="w-full h-full bg-black/20 flex flex-wrap items-center justify-center p-4 gap-4">
+                        <img src="https://picsum.photos/seed/icon-1/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-2/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-3/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-4/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-5/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-6/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-7/64/64" className="w-12 h-12 rounded-lg"/>
+                        <img src="https://picsum.photos/seed/icon-8/64/64" className="w-12 h-12 rounded-lg"/>
                     </div>
                 </FeatureCard>
             </div>
             <div onClick={() => onNavigate('ai-image-editor')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
-                <FeatureCard title="AI Image Editor" description="Reimagine your images with our AI editor. Extend image boundaries seamlessly, add or remove objects, or change styles with simple text prompts.">
-                    <img src="https://picsum.photos/seed/uncrop-dog/600/400" alt="Dog uncrop" className="w-full h-full object-cover" />
-                    <div className="absolute inset-8 border-2 border-dashed border-white/50"></div>
+                <FeatureCard title={content.cards.uncrop.title} description={content.cards.uncrop.description}>
+                    <div className="absolute inset-0 bg-gray-900 overflow-hidden">
+                        <img src="https://picsum.photos/seed/ancient-ruins/800/600" alt="Extended background" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        <div className="absolute w-3/4 h-3/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <img src="https://picsum.photos/seed/two-golden-retrievers/400/300" alt="Original dog image" className="w-full h-full object-cover rounded-lg shadow-2xl" />
+                        </div>
+                    </div>
                 </FeatureCard>
             </div>
             <div onClick={() => onNavigate('creative-upscaler')} className="cursor-pointer transform hover:scale-105 transition-transform duration-300">
-                <FeatureCard title="Creative Upscaler" description="From Blurry to Beautiful: Our AI Upscaler enhances your images, instantly transforming them into crisp, high-definition masterpieces.">
-                    <img src="https://picsum.photos/seed/upscale-after/600/400" alt="Upscaled landscape" className="absolute inset-0 w-full h-full object-cover"/>
-                    <div className="absolute inset-0 w-1/2 h-full bg-cover bg-center backdrop-blur-sm" style={{backgroundImage: "url('https://picsum.photos/seed/upscale-before/600/400')"}}></div>
+                <FeatureCard title={content.cards.upscaler.title} description={content.cards.upscaler.description}>
+                    <img src="https://picsum.photos/seed/rainbow-landscape/600/400" alt="Upscaled landscape" className="absolute inset-0 w-full h-full object-cover"/>
+                    <div className="absolute inset-0 w-1/2 h-full bg-cover bg-center backdrop-blur-md" style={{backgroundImage: "url('https://picsum.photos/seed/rainbow-landscape/600/400')"}}></div>
                     <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white">
-                    <div className="absolute top-1/2 -translate-y-1/2 -left-3.5 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-mono">&lt;&gt;</div>
+                        <div className="absolute top-1/2 -translate-y-1/2 -left-3.5 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-mono">&lt;&gt;</div>
                     </div>
-                    <div className="absolute top-2 left-4 text-white bg-black/50 px-2 py-1 rounded">Before</div>
-                    <div className="absolute top-2 right-4 text-white bg-black/50 px-2 py-1 rounded">After</div>
+                    <div className="absolute top-2 left-4 text-white bg-black/50 px-2 py-1 rounded text-xs">Before</div>
+                    <div className="absolute top-2 right-4 text-white bg-black/50 px-2 py-1 rounded text-xs">After</div>
                 </FeatureCard>
             </div>
         </div>

@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { PRICING_FEATURES } from '../constants';
+import { PlanFeature } from '../types';
 
 const CheckIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -14,14 +13,29 @@ const XIcon = () => (
     </svg>
 );
 
-const Pricing: React.FC = () => {
+interface PricingProps {
+    content: {
+        title: string;
+        subtitle: string;
+        compare: string;
+        compareSubtitle: string;
+        freePlan: string;
+        proPlan: string;
+        enterprisePlan: string;
+        choosePackage: string;
+        popular: string;
+        features: PlanFeature[];
+    }
+}
+
+const Pricing: React.FC<PricingProps> = ({ content }) => {
     return (
         <section id="pricing" className="py-20 px-4">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white">Affordable plans for every creator</h2>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
                     <p className="text-gray-400 mt-4">
-                        Choose a plan that fits your needs. Whether you're a creator just starting out or a business seeking advanced features, we have the perfect plan for you.
+                        {content.subtitle}
                     </p>
                 </div>
 
@@ -29,36 +43,36 @@ const Pricing: React.FC = () => {
                     <div className="grid grid-cols-4">
                         {/* Header Row */}
                         <div className="p-6 border-b border-r border-white/10">
-                            <h3 className="text-xl font-bold text-white">Compare plans</h3>
-                            <p className="text-sm text-gray-400 mt-1">Choose your workspace plan according to your organisational plan</p>
+                            <h3 className="text-xl font-bold text-white">{content.compare}</h3>
+                            <p className="text-sm text-gray-400 mt-1">{content.compareSubtitle}</p>
                         </div>
                         <div className="p-6 text-center border-b border-r border-white/10">
-                            <h3 className="text-xl font-bold text-white">Free Plan</h3>
-                            <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">Choose package</button>
+                            <h3 className="text-xl font-bold text-white">{content.freePlan}</h3>
+                            <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">{content.choosePackage}</button>
                         </div>
                         <div className="p-6 text-center border-b border-r border-white/10 bg-purple-600/10">
                             <div className="flex justify-center items-center">
-                                <h3 className="text-xl font-bold text-white">Pro Plan</h3>
-                                <span className="ml-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">Popular</span>
+                                <h3 className="text-xl font-bold text-white">{content.proPlan}</h3>
+                                <span className="ml-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">{content.popular}</span>
                             </div>
-                            <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">Choose package</button>
+                            <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">{content.choosePackage}</button>
                         </div>
                         <div className="p-6 text-center border-b border-white/10">
-                            <h3 className="text-xl font-bold text-white">Enterprise Plan</h3>
-                             <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">Choose package</button>
+                            <h3 className="text-xl font-bold text-white">{content.enterprisePlan}</h3>
+                             <button className="mt-4 bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition-colors">{content.choosePackage}</button>
                         </div>
 
                         {/* Feature Rows */}
-                        {PRICING_FEATURES.map((feature, index) => (
+                        {content.features.map((feature, index) => (
                             <React.Fragment key={feature.name}>
-                                <div className={`p-6 text-white border-r border-white/10 ${index < PRICING_FEATURES.length - 1 ? 'border-b' : ''}`}>{feature.name}</div>
-                                <div className={`p-6 text-gray-300 text-center border-r border-white/10 ${index < PRICING_FEATURES.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
+                                <div className={`p-6 text-white border-r border-white/10 ${index < content.features.length - 1 ? 'border-b' : ''}`}>{feature.name}</div>
+                                <div className={`p-6 text-gray-300 text-center border-r border-white/10 ${index < content.features.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
                                     {typeof feature.free === 'boolean' ? (feature.free ? <CheckIcon/> : <XIcon/>) : feature.free}
                                 </div>
-                                <div className={`p-6 text-gray-300 text-center border-r border-white/10 bg-purple-600/10 ${index < PRICING_FEATURES.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
+                                <div className={`p-6 text-gray-300 text-center border-r border-white/10 bg-purple-600/10 ${index < content.features.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
                                     {typeof feature.pro === 'boolean' ? (feature.pro ? <CheckIcon/> : <XIcon/>) : feature.pro}
                                 </div>
-                                <div className={`p-6 text-gray-300 text-center ${index < PRICING_FEATURES.length - 1 ? 'border-b border-white/10' : ''} flex justify-center items-center`}>
+                                <div className={`p-6 text-gray-300 text-center ${index < content.features.length - 1 ? 'border-b border-white/10' : ''} flex justify-center items-center`}>
                                     {typeof feature.enterprise === 'boolean' ? (feature.enterprise ? <CheckIcon/> : <XIcon/>) : feature.enterprise}
                                 </div>
                             </React.Fragment>

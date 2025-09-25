@@ -1,8 +1,15 @@
-
 import React from 'react';
-import { TESTIMONIALS } from '../constants';
+import { Testimonial } from '../types';
 
-const Testimonials: React.FC = () => {
+interface TestimonialsProps {
+    content: {
+        title: string;
+        subtitle: string;
+        quotes: Testimonial[];
+    }
+}
+
+const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
   return (
     <section id="testimonial" className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]">
@@ -10,14 +17,14 @@ const Testimonials: React.FC = () => {
         </div>
         <div className="max-w-7xl mx-auto relative">
             <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-bold text-white">What our users are saying</h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
                 <p className="text-gray-400 mt-4">
-                Don't just take our word for it — see how our platform has helped creators, businesses, and developers bring their projects to life with high-quality AI visuals.
+                    {content.subtitle}
                 </p>
             </div>
             <div className="mt-16 relative">
                  <div className="flex gap-8 animate-[marquee_40s_linear_infinite]">
-                    {[...TESTIMONIALS, ...TESTIMONIALS].map((testimonial, index) => (
+                    {[...content.quotes, ...content.quotes].map((testimonial, index) => (
                         <div key={index} className="bg-[#1c162d]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex-shrink-0 w-80 md:w-96">
                             <div className="flex items-center mb-4">
                                 <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4" />

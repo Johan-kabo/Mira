@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
-import { FAQ_ITEMS } from '../constants';
-import type { FaqItem } from '../types';
+import { FaqItem } from '../types';
 
 const AccordionItem: React.FC<{ item: FaqItem; isOpen: boolean; onClick: () => void }> = ({ item, isOpen, onClick }) => {
     return (
@@ -26,7 +24,16 @@ const AccordionItem: React.FC<{ item: FaqItem; isOpen: boolean; onClick: () => v
     );
 };
 
-const FAQ: React.FC = () => {
+interface FAQProps {
+    content: {
+        title: string;
+        subtitle: string;
+        button: string;
+        items: FaqItem[];
+    }
+}
+
+const FAQ: React.FC<FAQProps> = ({ content }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     const handleToggle = (index: number) => {
@@ -37,16 +44,16 @@ const FAQ: React.FC = () => {
         <section id="faq" className="py-20 px-4">
             <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12">
                 <div className="lg:col-span-1">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white">Have questions?</h2>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
                     <p className="text-gray-400 mt-4">
-                        Have questions about how our Text-to-Image AI works? Find the answers to the most common inquiries below. If you don't see your question, feel free to reach out!
+                        {content.subtitle}
                     </p>
                     <button className="mt-8 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
-                        View all questions
+                        {content.button}
                     </button>
                 </div>
                 <div className="lg:col-span-2">
-                    {FAQ_ITEMS.map((item, index) => (
+                    {content.items.map((item, index) => (
                         <AccordionItem
                             key={index}
                             item={item}
