@@ -101,10 +101,6 @@ export const translations = {
     ] as NavLink[],
     navLinks: ["Feature", "Use Case", "Testimonial", "Pricing", "FAQ"],
     signIn: "Sign In",
-    topBar: {
-      founded: "Founded in Tokyo, Japan. We respect your privacy.",
-      users: "Used by 21,000+ happy users"
-    },
     hero: {
       speechRelease: "Speech to speech release!",
       getAccess: "Get early access",
@@ -221,10 +217,6 @@ export const translations = {
     ] as NavLink[],
     navLinks: ["Fonctionnalités", "Cas d'usage", "Témoignages", "Tarifs", "FAQ"],
     signIn: "Se connecter",
-    topBar: {
-      founded: "Fondée à Tokyo, Japon. Nous respectons votre vie privée.",
-      users: "Utilisé par 21 000+ utilisateurs satisfaits"
-    },
     hero: {
       speechRelease: "Lancement de la conversion de la parole !",
       getAccess: "Accès anticipé",
