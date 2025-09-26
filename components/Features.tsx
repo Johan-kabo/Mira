@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Page } from '../App';
+// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import type { Page } from '../types';
 
 interface FeaturesProps {
     onNavigate: (page: Page) => void;
@@ -33,7 +34,7 @@ const Features: React.FC<FeaturesProps> = ({ onNavigate, content }) => {
     <section id="feature" className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
           <p className="text-gray-400 mt-4">
             {content.subtitle}
           </p>

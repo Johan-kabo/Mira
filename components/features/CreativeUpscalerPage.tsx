@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { editImage } from '../../services/geminiService';
-import type { Page } from '../../App';
+// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import type { Page } from '../../types';
 
 const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -44,6 +45,7 @@ const CreativeUpscalerPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ 
         }
     };
 
+    // FIX: Correctly define the async callback for upscaling the image.
     const handleUpscaleImage = useCallback(async () => {
         if (!imageFile) {
             setError("Please upload an image first.");
@@ -72,13 +74,13 @@ const CreativeUpscalerPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ 
             </button>
 
             <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold text-white">Creative AI Upscaler</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Creative AI Upscaler</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
                     Transform your low-resolution images into stunning, high-definition masterpieces with a single click.
                 </p>
             </div>
 
-            <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-8">
+            <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-4 sm:p-8">
                 {/* Uploader and Button */}
                 <div className="max-w-md mx-auto space-y-6">
                     <div>

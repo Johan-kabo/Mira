@@ -17,7 +17,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
         </div>
         <div className="max-w-7xl mx-auto relative">
             <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
                 <p className="text-gray-400 mt-4">
                     {content.subtitle}
                 </p>
@@ -25,7 +25,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
             <div className="mt-16 relative">
                  <div className="flex gap-8 animate-[marquee_40s_linear_infinite]">
                     {[...content.quotes, ...content.quotes].map((testimonial, index) => (
-                        <div key={index} className="bg-[#1c162d]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex-shrink-0 w-80 md:w-96">
+                        <div key={index} className="bg-[#1c162d]/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex-shrink-0 w-[80vw] max-w-[320px] md:w-96">
                             <div className="flex items-center mb-4">
                                 <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4" />
                                 <div>

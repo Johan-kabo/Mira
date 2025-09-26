@@ -14,11 +14,10 @@ import AIImageEditorPage from './components/features/AIImageEditorPage';
 import CreativeUpscalerPage from './components/features/CreativeUpscalerPage';
 import TopBar from './components/TopBar';
 import ScrollingImageGallery from './components/ScrollingImageGallery';
+import AboutPage from './components/AboutPage';
 import { translations } from './constants';
+import type { Page, Language } from './types';
 
-
-export type Page = 'home' | 'background-remover' | 'image-to-prompt' | 'ai-image-editor' | 'creative-upscaler';
-export type Language = 'fr' | 'en';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -41,6 +40,8 @@ function App() {
             return <AIImageEditorPage onNavigate={handleNavigate} />;
         case 'creative-upscaler':
             return <CreativeUpscalerPage onNavigate={handleNavigate} />;
+        case 'about':
+            return <AboutPage onNavigate={handleNavigate} content={content.aboutPage} />;
         case 'home':
         default:
             return (
@@ -81,12 +82,12 @@ function App() {
         }
       `}</style>
       <div className="relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/50 rounded-full blur-[200px] -z-0"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] bg-purple-900/50 rounded-full blur-[200px] -z-0"></div>
         <div className="relative z-10 flex flex-col min-h-screen">
           <TopBar content={content.topBar}/>
           <Header 
-            onNavigate={currentPage !== 'home' ? handleNavigate : undefined} 
-            navLinks={content.navLinks}
+            onNavigate={handleNavigate} 
+            navLinks={content.headerNavLinks}
             signInText={content.signIn}
             setLanguage={setLanguage}
             currentLanguage={language}
@@ -94,7 +95,7 @@ function App() {
           <div className="flex-grow">
             {renderPage()}
           </div>
-          <Footer navLinks={content.navLinks} content={content.footer} />
+          <Footer onNavigate={handleNavigate} content={content.footer} />
         </div>
       </div>
     </div>

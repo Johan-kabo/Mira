@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PlanFeature } from '../types';
 
 const CheckIcon = () => (
@@ -28,18 +28,51 @@ interface PricingProps {
     }
 }
 
+type Plan = 'free' | 'pro' | 'enterprise';
+
 const Pricing: React.FC<PricingProps> = ({ content }) => {
+    const [selectedPlan, setSelectedPlan] = useState<Plan>('pro');
+
+    const renderFeatureValue = (feature: PlanFeature, plan: Plan) => {
+        const value = feature[plan];
+        if (typeof value === 'boolean') {
+            return value ? <CheckIcon /> : <XIcon />;
+        }
+        return <span className="text-gray-300">{value}</span>;
+    };
+
     return (
         <section id="pricing" className="py-20 px-4">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h2>
                     <p className="text-gray-400 mt-4">
                         {content.subtitle}
                     </p>
                 </div>
 
-                <div className="mt-16 bg-[#1c162d]/50 border border-white/10 rounded-2xl overflow-hidden">
+                {/* Mobile View */}
+                <div className="mt-12 lg:hidden">
+                    <div className="flex justify-center bg-[#1c162d]/50 border border-white/10 rounded-full p-1">
+                        <button onClick={() => setSelectedPlan('free')} className={`w-1/3 py-2 rounded-full text-sm font-bold transition-colors ${selectedPlan === 'free' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}>{content.freePlan}</button>
+                        <button onClick={() => setSelectedPlan('pro')} className={`w-1/3 py-2 rounded-full text-sm font-bold transition-colors relative ${selectedPlan === 'pro' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}>{content.proPlan} <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">{content.popular}</span></button>
+                        <button onClick={() => setSelectedPlan('enterprise')} className={`w-1/3 py-2 rounded-full text-sm font-bold transition-colors ${selectedPlan === 'enterprise' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}>{content.enterprisePlan}</button>
+                    </div>
+                    <div className="mt-8 bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6">
+                        <ul className="space-y-4">
+                            {content.features.map(feature => (
+                                <li key={feature.name} className="flex justify-between items-center border-b border-white/10 pb-4 last:border-b-0">
+                                    <span className="text-white">{feature.name}</span>
+                                    {renderFeatureValue(feature, selectedPlan)}
+                                </li>
+                            ))}
+                        </ul>
+                         <button className="mt-8 bg-purple-600 text-white w-full py-3 rounded-lg hover:bg-purple-700 transition-colors font-bold">{content.choosePackage}</button>
+                    </div>
+                </div>
+
+                {/* Desktop View */}
+                <div className="mt-16 hidden lg:block bg-[#1c162d]/50 border border-white/10 rounded-2xl overflow-hidden">
                     <div className="grid grid-cols-4">
                         {/* Header Row */}
                         <div className="p-6 border-b border-r border-white/10">
@@ -67,13 +100,13 @@ const Pricing: React.FC<PricingProps> = ({ content }) => {
                             <React.Fragment key={feature.name}>
                                 <div className={`p-6 text-white border-r border-white/10 ${index < content.features.length - 1 ? 'border-b' : ''}`}>{feature.name}</div>
                                 <div className={`p-6 text-gray-300 text-center border-r border-white/10 ${index < content.features.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
-                                    {typeof feature.free === 'boolean' ? (feature.free ? <CheckIcon/> : <XIcon/>) : feature.free}
+                                    {renderFeatureValue(feature, 'free')}
                                 </div>
                                 <div className={`p-6 text-gray-300 text-center border-r border-white/10 bg-purple-600/10 ${index < content.features.length - 1 ? 'border-b' : ''} flex justify-center items-center`}>
-                                    {typeof feature.pro === 'boolean' ? (feature.pro ? <CheckIcon/> : <XIcon/>) : feature.pro}
+                                    {renderFeatureValue(feature, 'pro')}
                                 </div>
                                 <div className={`p-6 text-gray-300 text-center ${index < content.features.length - 1 ? 'border-b border-white/10' : ''} flex justify-center items-center`}>
-                                    {typeof feature.enterprise === 'boolean' ? (feature.enterprise ? <CheckIcon/> : <XIcon/>) : feature.enterprise}
+                                    {renderFeatureValue(feature, 'enterprise')}
                                 </div>
                             </React.Fragment>
                         ))}

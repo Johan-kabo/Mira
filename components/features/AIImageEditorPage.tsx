@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { editImage } from '../../services/geminiService';
-import type { Page } from '../../App';
+// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import type { Page } from '../../types';
 
 const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -76,7 +77,7 @@ const AIImageEditorPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onN
             </button>
 
             <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold text-white">AI Image Editor</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">AI Image Editor</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
                     Describe the changes you want to make. Add objects, change colors, alter the style, and more with simple text commands.
                 </p>
@@ -84,7 +85,7 @@ const AIImageEditorPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onN
 
             <div className="grid lg:grid-cols-2 gap-8 items-start">
                 {/* Controls */}
-                <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-8 space-y-6">
+                <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
                     <div>
                         <label htmlFor="image-upload" className="block text-lg font-medium text-white mb-2">1. Upload Image</label>
                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
@@ -112,7 +113,7 @@ const AIImageEditorPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onN
                 </div>
 
                 {/* Results */}
-                <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-8 min-h-[400px] flex flex-col justify-center items-center">
+                <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6 sm:p-8 min-h-[400px] flex flex-col justify-center items-center">
                     {loading && <LoadingSpinner />}
                     {error && <p className="text-red-400 bg-red-900/50 p-4 rounded-lg text-center">{error}</p>}
                     {!loading && !error && !originalImage && (

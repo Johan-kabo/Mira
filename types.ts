@@ -1,4 +1,12 @@
 
+export type Page = 'home' | 'background-remover' | 'image-to-prompt' | 'ai-image-editor' | 'creative-upscaler' | 'about';
+export type Language = 'fr' | 'en';
+
+export interface NavLink {
+  name: string;
+  page: Page;
+}
+
 export interface Testimonial {
   name: string;
   role: string;

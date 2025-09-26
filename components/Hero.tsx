@@ -11,6 +11,12 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
 );
 
+const DownloadIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+);
+
 
 interface HeroProps {
   content: {
@@ -20,6 +26,7 @@ interface HeroProps {
     subtitle: string;
     button: string;
     placeholder: string;
+    error: string;
   };
 }
 
@@ -31,7 +38,7 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
 
   const handleGenerateImage = async () => {
      if (!prompt.trim()) {
-      setError('Veuillez entrer un prompt.');
+      setError(content.error);
       return;
     }
     setLoading(true);
@@ -60,7 +67,7 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
         {content.speechRelease} <span className="mx-2">•</span> {content.getAccess} <span className="ml-2">→</span>
       </a>
 
-      <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight" dangerouslySetInnerHTML={{ __html: content.title }}></h1>
+      <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight" dangerouslySetInnerHTML={{ __html: content.title }}></h1>
       <p className="text-gray-300 max-w-2xl mx-auto mt-6">
         {content.subtitle}
       </p>
@@ -72,22 +79,23 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={content.placeholder}
-                className="w-full pl-6 pr-48 py-5 bg-white text-gray-900 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-500"
+                className="w-full pl-4 pr-32 sm:pl-6 sm:pr-48 py-4 bg-white text-gray-900 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-500"
                 disabled={loading}
             />
             <button
                 type="submit"
                 disabled={loading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full flex items-center space-x-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-full flex items-center space-x-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <CreateImageIcon />
-                <span>{content.button}</span>
+                <span className="hidden sm:inline">{content.button}</span>
+                 <span className="sm:hidden">Create</span>
             </button>
         </form>
         {error && <p className="text-red-400 mt-4">{error}</p>}
       </div>
       
-      <div className="mt-10 max-w-2xl mx-auto">
+      <div className="mt-10 w-full max-w-2xl mx-auto">
         {loading && (
           <div className="flex flex-col items-center justify-center p-8 bg-[#1c162d]/50 border border-white/10 rounded-2xl">
             <LoadingSpinner />
@@ -95,9 +103,20 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
           </div>
         )}
         {imageUrl && !loading && (
-          <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-4">
+          <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-2 sm:p-4">
             <h2 className="text-2xl font-bold text-white mb-4">Votre résultat</h2>
-            <img src={imageUrl} alt={prompt} className="rounded-xl shadow-lg mx-auto max-w-full" />
+            <div className="relative group">
+                <img src={imageUrl} alt={prompt} className="rounded-xl shadow-lg mx-auto max-w-full" />
+                <a
+                    href={imageUrl}
+                    download={`ai-image-${prompt.substring(0,20).replace(/\s/g, '_')}.png`}
+                    className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+                    aria-label="Download image"
+                    title="Download image"
+                >
+                    <DownloadIcon />
+                </a>
+            </div>
           </div>
         )}
       </div>

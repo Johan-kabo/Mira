@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Testimonial, PlanFeature, FaqItem } from './types';
+// FIX: Import NavLink to be used for type assertion.
+import type { Testimonial, PlanFeature, FaqItem, NavLink, Page } from './types';
 
 // SVG Icons (remain unchanged)
 function IconMarketing() {
@@ -92,6 +93,12 @@ const testimonialsData: Omit<Testimonial, 'quote'>[] = [
 
 export const translations = {
   en: {
+    headerNavLinks: [
+      { name: "Background Remover", page: "background-remover" },
+      { name: "Image to Prompt", page: "image-to-prompt" },
+      { name: "AI Image Editor", page: "ai-image-editor" },
+      { name: "Creative Upscaler", page: "creative-upscaler" }
+    ] as NavLink[],
     navLinks: ["Feature", "Use Case", "Testimonial", "Pricing", "FAQ"],
     signIn: "Sign In",
     topBar: {
@@ -104,7 +111,8 @@ export const translations = {
       title: "Turn Your Words into <br /> Stunning Visuals",
       subtitle: "Whether you need concept art, marketing materials, or personal projects, our text-to-image generator brings your imagination to life.",
       button: "Create image",
-      placeholder: "a cyberpunk dystopia with a sprawling, rain-soaked cityscape"
+      placeholder: "a cyberpunk dystopia with a sprawling, rain-soaked cityscape",
+      error: "Please enter a prompt."
     },
     features: {
         title: "Explore the powerful features behind our text-to-image generator",
@@ -188,12 +196,29 @@ export const translations = {
     },
     footer: {
       description: "Streamline Operations, Boost Productivity, and Drive Innovation with Our All-in-One Platform",
-      quickLinks: "Quick Links",
+      about: "About",
+      aboutLinks: [
+        { name: "About Us", page: "about" as Page }
+      ],
       contact: "Contact",
-      copyright: "© 2024 Aiyaiya. All rights reserved."
+      copyright: "© 2024 Mira. All rights reserved."
+    },
+    aboutPage: {
+        title: "About Mira",
+        subtitle: "Mira, a product of the Danma brand, positions itself as a bridge between artificial intelligence and human imagination. Our mission is to make digital creation intuitive and accessible to everyone, allowing each person to transform their ideas into unique works, without technical barriers. With Mira, art and technology merge to unleash everyone's creative potential.",
+        missionTitle: "Our Mission",
+        missionText: "Our mission is to empower creators with intuitive and powerful AI tools. We believe that technology should amplify imagination, not replace it. Mira is designed to be a partner in your creative journey, helping you bring your most ambitious ideas to life with unprecedented speed and quality.",
+        teamTitle: "Our Team",
+        teamText: "We are a diverse team of AI researchers, software engineers, and UX designers united by a passion for innovation. Based in Tokyo, we draw inspiration from both the city's technological advancement and its rich artistic heritage. We are dedicated to pushing the boundaries of what's possible in generative art while ensuring our platform is user-friendly and respects privacy.",
     }
   },
   fr: {
+    headerNavLinks: [
+      { name: "Suppresseur d'arrière-plan", page: "background-remover" },
+      { name: "Image vers Prompt", page: "image-to-prompt" },
+      { name: "Éditeur d'images IA", page: "ai-image-editor" },
+      { name: "Améliorateur créatif", page: "creative-upscaler" }
+    ] as NavLink[],
     navLinks: ["Fonctionnalités", "Cas d'usage", "Témoignages", "Tarifs", "FAQ"],
     signIn: "Se connecter",
     topBar: {
@@ -206,7 +231,8 @@ export const translations = {
       title: "Transformez vos mots en <br /> visuels époustouflants",
       subtitle: "Que vous ayez besoin de concept art, de supports marketing ou de projets personnels, notre générateur de texte en image donne vie à votre imagination.",
       button: "Créer une image",
-      placeholder: "une dystopie cyberpunk avec un paysage urbain tentaculaire et détrempé par la pluie"
+      placeholder: "une dystopie cyberpunk avec un paysage urbain tentaculaire et détrempé par la pluie",
+      error: "Veuillez entrer un prompt."
     },
     features: {
         title: "Découvrez les puissantes fonctionnalités de notre générateur de texte en image",
@@ -290,9 +316,20 @@ export const translations = {
     },
     footer: {
       description: "Rationalisez les opérations, augmentez la productivité et stimulez l'innovation avec notre plateforme tout-en-un.",
-      quickLinks: "Liens rapides",
+      about: "À propos",
+      aboutLinks: [
+        { name: "Qui sommes-nous ?", page: "about" as Page }
+      ],
       contact: "Contact",
-      copyright: "© 2024 Aiyaiya. Tous droits réservés."
+      copyright: "© 2024 Mira. Tous droits réservés."
+    },
+    aboutPage: {
+        title: "À propos de Mira",
+        subtitle: "Mira, produit de la marque Danma, se positionne comme un pont entre l’intelligence artificielle et l’imagination humaine. Notre mission est de rendre la création numérique intuitive et accessible à tous, en permettant à chacun de transformer ses idées en œuvres uniques, sans barrières techniques. Avec Mira, l’art et la technologie fusionnent pour libérer le potentiel créatif de tous.",
+        missionTitle: "Notre Mission",
+        missionText: "Notre mission est de doter les créateurs d'outils d'IA intuitifs et puissants. Nous croyons que la technologie doit amplifier l'imagination, et non la remplacer. Mira est conçu pour être un partenaire dans votre parcours créatif, vous aidant à donner vie à vos idées les plus ambitieuses avec une rapidité et une qualité sans précédent.",
+        teamTitle: "Notre Équipe",
+        teamText: "Nous sommes une équipe diversifiée de chercheurs en IA, d'ingénieurs logiciels et de designers UX unis par une passion pour l'innovation. Basés à Tokyo, nous nous inspirons à la fois de l'avancement technologique de la ville et de son riche héritage artistique. Nous nous consacrons à repousser les limites du possible dans l'art génératif tout en garantissant que notre plateforme est conviviale et respectueuse de la vie privée.",
     }
   }
 };

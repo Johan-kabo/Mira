@@ -17,7 +17,7 @@ const UseCases: React.FC<UseCasesProps> = ({ content }) => {
   return (
     <section id="use-case" className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-12">{content.title}</h2>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center mb-12">{content.title}</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {content.items.map((useCase, index) => (
             <div key={useCase.title} className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-8">
