@@ -1,8 +1,7 @@
 import { GoogleGenAI, Modality, GenerateContentResponse } from "@google/genai";
 
-// Per guidelines, the API key must be obtained from process.env.API_KEY.
-// It is assumed to be available in the execution environment.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Use Vite's environment variable access for browser compatibility
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 interface Base64Image {
     base64: string;
