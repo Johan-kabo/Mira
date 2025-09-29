@@ -42,7 +42,7 @@ const Pricing: React.FC<PricingProps> = ({ content }) => {
     };
 
     return (
-        <section id="pricing" className="py-20 px-4">
+        <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center max-w-3xl mx-auto">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h2>

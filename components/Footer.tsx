@@ -20,7 +20,7 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onNavigate, content }) => {
   return (
-    <footer className="bg-[#110e1b] text-gray-400 py-16 px-4">
+    <footer className="bg-[#110e1b] text-gray-400 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
           <div className="md:col-span-2 flex flex-col items-center md:items-start">

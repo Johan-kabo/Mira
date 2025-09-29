@@ -8,14 +8,17 @@ import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
+import AboutPage from './components/AboutPage';
+import DashboardLayout from './components/DashboardLayout';
 import BackgroundRemoverPage from './components/features/BackgroundRemoverPage';
 import ImageToPromptPage from './components/features/ImageToPromptPage';
 import AIImageEditorPage from './components/features/AIImageEditorPage';
 import CreativeUpscalerPage from './components/features/CreativeUpscalerPage';
+import VideoGeneratorPage from './components/features/VideoGeneratorPage';
+import TextToAudioPage from './components/features/TextToAudioPage';
 import ScrollingImageGallery from './components/ScrollingImageGallery';
-import AboutPage from './components/AboutPage';
 import { translations } from './constants';
-import type { Page, Language } from './types';
+import type { Page, Language, NavLink } from './types';
 import './src/gemini'; // Ensures the AI client is initialized
 
 
@@ -30,36 +33,35 @@ function App() {
 
   const content = translations[language];
   
-  const renderPage = () => {
-    switch (currentPage) {
-        case 'background-remover':
-            return <BackgroundRemoverPage onNavigate={handleNavigate} />;
-        case 'image-to-prompt':
-            return <ImageToPromptPage onNavigate={handleNavigate} />;
-        case 'ai-image-editor':
-            return <AIImageEditorPage onNavigate={handleNavigate} />;
-        case 'creative-upscaler':
-            return <CreativeUpscalerPage onNavigate={handleNavigate} />;
-        case 'about':
-            return <AboutPage onNavigate={handleNavigate} content={content.aboutPage} />;
-        case 'home':
-        default:
-            return (
-                <main>
-                    <Hero content={content.hero} />
-                    <ImageGallery />
-                    <Features onNavigate={handleNavigate} content={content.features} />
-                    <ScrollingImageGallery />
-                    <UseCases content={content.useCases}/>
-                    <Testimonials content={content.testimonials}/>
-                    <Pricing content={content.pricing} />
-                    <FAQ content={content.faq}/>
-                </main>
-            );
+  const toolPages: Page[] = ['video-generator', 'text-to-audio', 'background-remover', 'image-to-prompt', 'ai-image-editor', 'creative-upscaler'];
+
+  // Render Dashboard for tool pages
+  if (toolPages.includes(currentPage)) {
+    let pageComponent: React.ReactNode;
+    switch(currentPage) {
+      case 'video-generator': pageComponent = <VideoGeneratorPage />; break;
+      case 'text-to-audio': pageComponent = <TextToAudioPage />; break;
+      case 'background-remover': pageComponent = <BackgroundRemoverPage />; break;
+      case 'image-to-prompt': pageComponent = <ImageToPromptPage />; break;
+      case 'ai-image-editor': pageComponent = <AIImageEditorPage />; break;
+      case 'creative-upscaler': pageComponent = <CreativeUpscalerPage />; break;
     }
-  };
 
-
+    return (
+      <DashboardLayout
+        toolNavLinks={content.toolNavLinks}
+        onNavigate={handleNavigate}
+        currentPage={currentPage}
+        setLanguage={setLanguage}
+        currentLanguage={language}
+        signInText={content.signIn}
+      >
+        {pageComponent}
+      </DashboardLayout>
+    );
+  }
+  
+  // Render Marketing site pages
   return (
     <div className="dark bg-[#0d0b14] text-white font-sans min-h-screen">
       <style>{`
@@ -85,14 +87,27 @@ function App() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] bg-purple-900/50 rounded-full blur-[200px] -z-0"></div>
         <div className="relative z-10 flex flex-col min-h-screen">
           <Header 
-            onNavigate={handleNavigate} 
-            navLinks={content.headerNavLinks}
+            onNavigate={handleNavigate}
             signInText={content.signIn}
             setLanguage={setLanguage}
             currentLanguage={language}
           />
           <div className="flex-grow">
-            {renderPage()}
+            {currentPage === 'about' ? 
+              <AboutPage onNavigate={handleNavigate} content={content.aboutPage} /> : 
+              (
+                <main>
+                    <Hero content={content.hero} />
+                    <ImageGallery />
+                    <Features onNavigate={handleNavigate} content={content.features} />
+                    <ScrollingImageGallery />
+                    <UseCases content={content.useCases}/>
+                    <Testimonials content={content.testimonials}/>
+                    <Pricing content={content.pricing} />
+                    <FAQ content={content.faq}/>
+                </main>
+              )
+            }
           </div>
           <Footer onNavigate={handleNavigate} content={content.footer} />
         </div>

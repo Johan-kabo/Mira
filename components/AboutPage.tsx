@@ -21,7 +21,7 @@ interface AboutPageProps {
 
 const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, content }) => {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16 lg:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
             <button onClick={() => onNavigate('home')} className="flex items-center space-x-2 text-gray-300 hover:text-white mb-8 group">
                 <BackArrowIcon />
                 <span className="group-hover:underline">Back to Home</span>

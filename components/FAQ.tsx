@@ -41,7 +41,7 @@ const FAQ: React.FC<FAQProps> = ({ content }) => {
     };
 
     return (
-        <section id="faq" className="py-20 px-4">
+        <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12">
                 <div className="lg:col-span-1">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h2>

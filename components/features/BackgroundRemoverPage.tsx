@@ -7,13 +7,6 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
 );
 
-const BackArrowIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-    </svg>
-);
-
-
 const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -28,7 +21,7 @@ const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }>
     });
 };
 
-const BackgroundRemoverPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }) => {
+const BackgroundRemoverPage: React.FC = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [originalImage, setOriginalImage] = useState<string | null>(null);
     const [resultImage, setResultImage] = useState<string | null>(null);
@@ -98,12 +91,7 @@ const BackgroundRemoverPage: React.FC<{ onNavigate: (page: Page) => void }> = ({
     }, [imageFile]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-            <button onClick={() => onNavigate('home')} className="flex items-center space-x-2 text-gray-300 hover:text-white mb-8">
-                <BackArrowIcon />
-                <span>Back to Home</span>
-            </button>
-
+        <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">AI Background Remover</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">

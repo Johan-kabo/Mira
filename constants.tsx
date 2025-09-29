@@ -52,7 +52,6 @@ function IconPrompt() {
     )
 }
 
-
 export const GALLERY_IMAGES_TOP = [
   "https://picsum.photos/seed/cat1/400/300",
   "https://picsum.photos/seed/bridge2/400/300",
@@ -93,7 +92,9 @@ const testimonialsData: Omit<Testimonial, 'quote'>[] = [
 
 export const translations = {
   en: {
-    headerNavLinks: [
+    toolNavLinks: [
+      { name: "AI Video Generator", page: "video-generator" },
+      { name: "AI Audio Generator", page: "text-to-audio" },
       { name: "Background Remover", page: "background-remover" },
       { name: "Image to Prompt", page: "image-to-prompt" },
       { name: "AI Image Editor", page: "ai-image-editor" },
@@ -111,9 +112,17 @@ export const translations = {
       error: "Please enter a prompt."
     },
     features: {
-        title: "Explore the powerful features behind our text-to-image generator",
-        subtitle: "Our text-to-image generator is built with cutting-edge technology to deliver exceptional results. Whether you're a designer, content creator, or business owner, these features will elevate your creative process to the next level.",
+        title: "Explore the powerful features behind our AI generator",
+        subtitle: "Our AI generator is built with cutting-edge technology to deliver exceptional results. Whether you're a designer, content creator, or business owner, these features will elevate your creative process to the next level.",
         cards: {
+            video_generator: {
+                title: "AI Video Generator",
+                description: "Create short, high-quality video clips from a simple text description. Perfect for social media, ads, or animated concepts."
+            },
+            text_to_audio: {
+                title: "AI Audio Generator",
+                description: "Transform text into lifelike speech. Choose from various voices, adjust speed and pitch, and bring your words to life."
+            },
             remover: {
                 title: "Background Remover",
                 description: "Effortlessly remove image backgrounds in seconds with our advanced AI technology. Perfect for creating stunning visuals, professional presentations, or e-commerce product photos."
@@ -122,9 +131,9 @@ export const translations = {
                 title: "Image to Prompt",
                 description: "Upload an image and let our AI analyze it to generate a detailed, creative text prompt. Discover the magic behind the art."
             },
-            uncrop: {
-                title: "Uncrop Images",
-                description: "Reimagine your images with our Uncrop feature! Extend image boundaries seamlessly using AI technology to fill in the gaps."
+            style_transfer: {
+                title: "AI Style Transfer",
+                description: "Apply the artistic style of one image to another. Turn your photos into works of art in the style of famous painters or abstract designs."
             },
             upscaler: {
                 title: "Creative Upscaler",
@@ -209,7 +218,9 @@ export const translations = {
     }
   },
   fr: {
-    headerNavLinks: [
+    toolNavLinks: [
+      { name: "Générateur Vidéo IA", page: "video-generator" },
+      { name: "Générateur Audio IA", page: "text-to-audio" },
       { name: "Suppresseur d'arrière-plan", page: "background-remover" },
       { name: "Image vers Prompt", page: "image-to-prompt" },
       { name: "Éditeur d'images IA", page: "ai-image-editor" },
@@ -227,9 +238,17 @@ export const translations = {
       error: "Veuillez entrer un prompt."
     },
     features: {
-        title: "Découvrez les puissantes fonctionnalités de notre générateur de texte en image",
-        subtitle: "Notre générateur de texte en image est doté d'une technologie de pointe pour des résultats exceptionnels. Que vous soyez designer, créateur de contenu ou propriétaire d'entreprise, ces fonctionnalités sublimeront votre processus créatif.",
+        title: "Découvrez les puissantes fonctionnalités de notre générateur IA",
+        subtitle: "Notre générateur IA est doté d'une technologie de pointe pour des résultats exceptionnels. Que vous soyez designer, créateur de contenu ou propriétaire d'entreprise, ces fonctionnalités sublimeront votre processus créatif.",
         cards: {
+            video_generator: {
+                title: "Générateur Vidéo IA",
+                description: "Créez de courtes séquences vidéo de haute qualité à partir d'une simple description textuelle. Parfait pour les réseaux sociaux, les publicités ou les concepts animés."
+            },
+            text_to_audio: {
+                title: "Générateur Audio IA",
+                description: "Transformez du texte en parole vivante. Choisissez parmi diverses voix, ajustez la vitesse et le ton, et donnez vie à vos mots."
+            },
             remover: {
                 title: "Suppresseur d'arrière-plan",
                 description: "Supprimez sans effort les arrière-plans d'images en quelques secondes grâce à notre technologie IA avancée. Parfait pour créer des visuels saisissants, des présentations professionnelles ou des photos de produits e-commerce."
@@ -238,9 +257,9 @@ export const translations = {
                 title: "Image vers Prompt",
                 description: "Téléchargez une image et laissez notre IA l'analyser pour générer un prompt textuel détaillé et créatif. Découvrez la magie derrière l'art."
             },
-            uncrop: {
-                title: "Dé-recadrer les images",
-                description: "Réinventez vos images avec notre fonction Dé-recadrage ! Étendez les limites de l'image de manière transparente en utilisant la technologie IA pour combler les vides."
+            style_transfer: {
+                title: "Transfert de Style IA",
+                description: "Appliquez le style artistique d'une image à une autre. Transformez vos photos en œuvres d'art dans le style de peintres célèbres ou de designs abstraits."
             },
             upscaler: {
                 title: "Améliorateur créatif",
@@ -334,3 +353,14 @@ export const USE_CASE_ICONS = [
     <IconModels />,
     <IconPrompt />,
 ];
+
+export const TOOL_ICONS: Record<Page, React.ReactNode> = {
+    'video-generator': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+    'text-to-audio': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>,
+    'background-remover': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /><path strokeLinecap="round" strokeLinejoin="round" d="M19 12a7 7 0 11-14 0 7 7 0 0114 0z" opacity="0.3" /></svg>,
+    'image-to-prompt': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11h.01" /></svg>,
+    'ai-image-editor': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>,
+    'creative-upscaler': <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 11l7-7 7 7M5 19l7-7 7 7" /></svg>,
+    'home': <></>,
+    'about': <></>
+};

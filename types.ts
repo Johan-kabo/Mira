@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'background-remover' | 'image-to-prompt' | 'ai-image-editor' | 'creative-upscaler' | 'about';
+export type Page = 'home' | 'background-remover' | 'image-to-prompt' | 'ai-image-editor' | 'creative-upscaler' | 'about' | 'video-generator' | 'text-to-audio';
 export type Language = 'fr' | 'en';
 
 export interface NavLink {

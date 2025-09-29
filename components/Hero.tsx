@@ -75,14 +75,14 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
   };
   
   return (
-    <section className="text-center pt-10 pb-20 px-4">
+    <section className="text-center pt-10 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#1c162d] to-[#0d0b14] -z-10"></div>
       
       <a href="#" className="inline-flex items-center bg-white/10 text-white py-1 px-4 rounded-full text-sm mb-6 hover:bg-white/20 transition-colors">
         {content.speechRelease} <span className="mx-2">•</span> {content.getAccess} <span className="ml-2">→</span>
       </a>
 
-      <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight" dangerouslySetInnerHTML={{ __html: content.title }}></h1>
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight" dangerouslySetInnerHTML={{ __html: content.title }}></h1>
       <p className="text-gray-300 max-w-2xl mx-auto mt-6">
         {content.subtitle}
       </p>
