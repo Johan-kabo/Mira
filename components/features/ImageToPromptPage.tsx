@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { getPromptFromImage } from '../../services/geminiService';
-// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import { ai } from '../../src/gemini';
 import type { Page } from '../../types';
 
 const LoadingSpinner = () => (
@@ -49,13 +48,32 @@ const ImageToPromptPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onN
             setError("Please upload an image first.");
             return;
         }
+
+        const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; 
+        if (imageFile.size > MAX_SIZE_BYTES) {
+            setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         setGeneratedPrompt(null);
         try {
             const { base64, mimeType } = await fileToBase64(imageFile);
-            const prompt = await getPromptFromImage({ base64, mimeType });
-            setGeneratedPrompt(prompt);
+            
+            const imagePart = {
+                inlineData: { data: base64, mimeType },
+            };
+            const textPart = {
+                text: "Describe this image in detail. Generate a descriptive and imaginative prompt that could be used to create a similar image with an AI image generator.",
+            };
+
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: { parts: [imagePart, textPart] },
+            });
+            setGeneratedPrompt(response.text);
+
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
         } finally {
@@ -99,7 +117,7 @@ const ImageToPromptPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ onN
                                     </label>
                                     <p className="pl-1 hidden sm:block">or drag and drop</p>
                                 </div>
-                                <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
                             </div>
                         </div>
                     </div>

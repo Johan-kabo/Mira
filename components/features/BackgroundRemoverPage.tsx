@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { editImage } from '../../services/geminiService';
-// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import { ai } from '../../src/gemini';
+import { Modality, GenerateContentResponse } from '@google/genai';
 import type { Page } from '../../types';
 
 const LoadingSpinner = () => (
@@ -45,20 +45,51 @@ const BackgroundRemoverPage: React.FC<{ onNavigate: (page: Page) => void }> = ({
         }
     };
 
-    // FIX: Correctly define the async callback for removing the background.
     const handleRemoveBackground = useCallback(async () => {
         if (!imageFile) {
             setError("Please upload an image first.");
             return;
         }
+
+        const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; 
+        if (imageFile.size > MAX_SIZE_BYTES) {
+            setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         setResultImage(null);
         try {
             const { base64, mimeType } = await fileToBase64(imageFile);
             const prompt = "Remove the background from this image. Make the new background transparent.";
-            const newImageUrl = await editImage({ base64, mimeType }, prompt);
-            setResultImage(newImageUrl);
+            
+            const imagePart = { inlineData: { data: base64, mimeType } };
+            const textPart = { text: prompt };
+
+            const response: GenerateContentResponse = await ai.models.generateContent({
+                model: 'gemini-2.5-flash-image-preview',
+                contents: { parts: [imagePart, textPart] },
+                config: {
+                    responseModalities: [Modality.IMAGE, Modality.TEXT],
+                },
+            });
+            
+            const candidate = response.candidates?.[0];
+            if (!candidate || !candidate.content || !candidate.content.parts) {
+                throw new Error("The AI model did not return a valid response. Your request may have been blocked by safety filters.");
+            }
+
+            for (const part of candidate.content.parts) {
+                if (part.inlineData) {
+                    const base64ImageBytes: string = part.inlineData.data;
+                    const newImageUrl = `data:${part.inlineData.mimeType};base64,${base64ImageBytes}`;
+                    setResultImage(newImageUrl);
+                    return;
+                }
+            }
+            throw new Error("Could not find an image in the model's response.");
+
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
         } finally {
@@ -95,7 +126,7 @@ const BackgroundRemoverPage: React.FC<{ onNavigate: (page: Page) => void }> = ({
                                     </label>
                                     <p className="pl-1 hidden sm:block">or drag and drop</p>
                                 </div>
-                                <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
                             </div>
                         </div>
                     </div>

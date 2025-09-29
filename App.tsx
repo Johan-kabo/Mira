@@ -16,6 +16,7 @@ import ScrollingImageGallery from './components/ScrollingImageGallery';
 import AboutPage from './components/AboutPage';
 import { translations } from './constants';
 import type { Page, Language } from './types';
+import './src/gemini'; // Ensures the AI client is initialized
 
 
 function App() {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateImage } from '../services/geminiService';
+import { ai } from '../src/gemini';
 
 const CreateImageIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -46,8 +46,23 @@ const Hero: React.FC<HeroProps> = ({ content }) => {
     setImageUrl(null);
 
     try {
-      const newImageUrl = await generateImage(prompt);
-      setImageUrl(newImageUrl);
+      const response = await ai.models.generateImages({
+        model: 'imagen-4.0-generate-001',
+        prompt: prompt,
+        config: {
+          numberOfImages: 1,
+          outputMimeType: 'image/png',
+          aspectRatio: '1:1',
+        },
+      });
+
+      if (response.generatedImages && response.generatedImages.length > 0) {
+        const base64ImageBytes = response.generatedImages[0].image.imageBytes;
+        const newImageUrl = `data:image/png;base64,${base64ImageBytes}`;
+        setImageUrl(newImageUrl);
+      } else {
+        throw new Error("Aucune image n'a été générée. La réponse a peut-être été bloquée.");
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

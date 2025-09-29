@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { editImage } from '../../services/geminiService';
-// FIX: The Page type is exported from `types.ts`, not `App.tsx`.
+import { ai } from '../../src/gemini';
+import { Modality, GenerateContentResponse } from '@google/genai';
 import type { Page } from '../../types';
 
 const LoadingSpinner = () => (
@@ -45,20 +45,51 @@ const CreativeUpscalerPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ 
         }
     };
 
-    // FIX: Correctly define the async callback for upscaling the image.
     const handleUpscaleImage = useCallback(async () => {
         if (!imageFile) {
             setError("Please upload an image first.");
             return;
         }
+
+        const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; 
+        if (imageFile.size > MAX_SIZE_BYTES) {
+            setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         setResultImage(null);
         try {
             const { base64, mimeType } = await fileToBase64(imageFile);
             const prompt = "Upscale this image, enhancing its details, sharpness, and overall resolution. Make it look like a high-quality photograph.";
-            const newImageUrl = await editImage({ base64, mimeType }, prompt);
-            setResultImage(newImageUrl);
+            
+            const imagePart = { inlineData: { data: base64, mimeType } };
+            const textPart = { text: prompt };
+
+            const response: GenerateContentResponse = await ai.models.generateContent({
+                model: 'gemini-2.5-flash-image-preview',
+                contents: { parts: [imagePart, textPart] },
+                config: {
+                    responseModalities: [Modality.IMAGE, Modality.TEXT],
+                },
+            });
+            
+            const candidate = response.candidates?.[0];
+            if (!candidate || !candidate.content || !candidate.content.parts) {
+                throw new Error("The AI model did not return a valid response. Your request may have been blocked by safety filters.");
+            }
+
+            for (const part of candidate.content.parts) {
+                if (part.inlineData) {
+                    const base64ImageBytes: string = part.inlineData.data;
+                    const newImageUrl = `data:${part.inlineData.mimeType};base64,${base64ImageBytes}`;
+                    setResultImage(newImageUrl);
+                    return;
+                }
+            }
+            throw new Error("Could not find an image in the model's response.");
+
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
         } finally {
@@ -88,6 +119,7 @@ const CreativeUpscalerPage: React.FC<{ onNavigate: (page: Page) => void }> = ({ 
                             <div className="space-y-1 text-center">
                                 <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 <span className="text-purple-400 font-medium">{imageFile ? `${imageFile.name} selected` : 'Click to upload an image'}</span>
+                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
                                 <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={handleFileChange} />
                             </div>
                         </label>
