@@ -233,7 +233,7 @@ export const translations = {
       getAccess: "Accès anticipé",
       title: "Transformez vos mots en <br /> visuels époustouflants",
       subtitle: "Que vous ayez besoin de concept art, de supports marketing ou de projets personnels, notre générateur de texte en image donne vie à votre imagination.",
-      button: "Créer une image",
+      button: "Créer votre image",
       placeholder: "une dystopie cyberpunk avec un paysage urbain tentaculaire et détrempé par la pluie",
       error: "Veuillez entrer un prompt."
     },
