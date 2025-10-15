@@ -160,8 +160,8 @@ const VideoGeneratorPage: React.FC<VideoGeneratorPageProps> = ({ content }) => {
                 throw new Error("Video generation completed, but no video URI was found in the response.");
             }
 
-            // FIX: The API key must be accessed from process.env.API_KEY as per the guidelines,
-            // instead of Vite-specific import.meta.env.
+            // FIX: Access API key from process.env.API_KEY as per guidelines.
+            // This resolves the TypeScript error related to 'import.meta.env'.
             const apiKey = process.env.API_KEY;
             if (!apiKey) {
                 throw new Error(content.errorApiKey);
