@@ -39,12 +39,12 @@ function App() {
   if (toolPages.includes(currentPage)) {
     let pageComponent: React.ReactNode;
     switch(currentPage) {
-      case 'video-generator': pageComponent = <VideoGeneratorPage />; break;
-      case 'text-to-audio': pageComponent = <TextToAudioPage />; break;
-      case 'background-remover': pageComponent = <BackgroundRemoverPage />; break;
-      case 'image-to-prompt': pageComponent = <ImageToPromptPage />; break;
-      case 'ai-image-editor': pageComponent = <AIImageEditorPage />; break;
-      case 'creative-upscaler': pageComponent = <CreativeUpscalerPage />; break;
+      case 'video-generator': pageComponent = <VideoGeneratorPage content={content.featurePages.videoGenerator} />; break;
+      case 'text-to-audio': pageComponent = <TextToAudioPage content={content.featurePages.textToAudio} />; break;
+      case 'background-remover': pageComponent = <BackgroundRemoverPage content={content.featurePages.backgroundRemover} />; break;
+      case 'image-to-prompt': pageComponent = <ImageToPromptPage content={content.featurePages.imageToPrompt} />; break;
+      case 'ai-image-editor': pageComponent = <AIImageEditorPage content={content.featurePages.aiImageEditor} />; break;
+      case 'creative-upscaler': pageComponent = <CreativeUpscalerPage content={content.featurePages.creativeUpscaler} />; break;
     }
 
     return (

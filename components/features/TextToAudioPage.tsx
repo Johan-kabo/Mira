@@ -4,7 +4,28 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
 );
 
-const TextToAudioPage: React.FC = () => {
+interface TextToAudioPageProps {
+    content: {
+        title: string;
+        subtitle: string;
+        textLabel: string;
+        textPlaceholder: string;
+        voiceLabel: string;
+        rateLabel: string;
+        pitchLabel: string;
+        downloadHint: string;
+        errorPermission: string;
+        errorSpeech: string;
+        errorText: string;
+        generateButton: string;
+        processingButton: string;
+        loadingVoices: string;
+        downloadReady: string;
+        downloadButton: string;
+    }
+}
+
+const TextToAudioPage: React.FC<TextToAudioPageProps> = ({ content }) => {
     const [text, setText] = useState('Bonjour! Bienvenue sur Mira AI. Écrivez quelque chose ici et écoutez-le prendre vie.');
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | undefined>();
@@ -54,7 +75,7 @@ const TextToAudioPage: React.FC = () => {
 
     const handleGenerateAndPlay = async () => {
         if (!text.trim()) {
-            setError('Please enter some text to speak.');
+            setError(content.errorText);
             return;
         }
 
@@ -71,7 +92,7 @@ const TextToAudioPage: React.FC = () => {
             });
             streamRef.current = displayStream;
         } catch (err) {
-            setError("Permission to capture audio was denied. To enable download, please allow sharing your tab's audio.");
+            setError(content.errorPermission);
             setIsProcessing(false);
             return;
         }
@@ -113,7 +134,7 @@ const TextToAudioPage: React.FC = () => {
         };
         
         utterance.onerror = (e) => {
-            setError(`Speech error: ${e.error}`);
+            setError(content.errorSpeech.replace('{error}', e.error));
             if (mediaRecorderRef.current?.state === 'recording') {
                 mediaRecorderRef.current.stop();
             }
@@ -127,20 +148,20 @@ const TextToAudioPage: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">AI Audio Generator</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
-                    Transform your text into lifelike speech. Select a voice, adjust the speed and pitch, and listen to your words.
+                    {content.subtitle}
                 </p>
             </div>
 
             <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
                 <div>
-                    <label htmlFor="text-input" className="block text-lg font-medium text-white mb-2">Votre Texte</label>
+                    <label htmlFor="text-input" className="block text-lg font-medium text-white mb-2">{content.textLabel}</label>
                     <textarea
                         id="text-input"
                         rows={6}
                         className="w-full p-3 bg-white/10 text-white rounded-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        placeholder="Enter text here..."
+                        placeholder={content.textPlaceholder}
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                     />
@@ -148,7 +169,7 @@ const TextToAudioPage: React.FC = () => {
 
                 <div className="grid md:grid-cols-3 gap-6">
                     <div>
-                        <label htmlFor="voice-select" className="block text-sm font-medium text-white mb-2">Voix</label>
+                        <label htmlFor="voice-select" className="block text-sm font-medium text-white mb-2">{content.voiceLabel}</label>
                         <select
                             id="voice-select"
                             className="w-full p-2.5 bg-white/10 text-white rounded-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -163,12 +184,12 @@ const TextToAudioPage: React.FC = () => {
                                     </option>
                                 ))
                             ) : (
-                                <option>Chargement des voix...</option>
+                                <option>{content.loadingVoices}</option>
                             )}
                         </select>
                     </div>
                      <div>
-                        <label htmlFor="rate-slider" className="block text-sm font-medium text-white mb-2">Vitesse: {rate.toFixed(1)}x</label>
+                        <label htmlFor="rate-slider" className="block text-sm font-medium text-white mb-2">{content.rateLabel.replace('{rate}', rate.toFixed(1))}</label>
                         <input
                             id="rate-slider"
                             type="range"
@@ -181,7 +202,7 @@ const TextToAudioPage: React.FC = () => {
                         />
                     </div>
                      <div>
-                        <label htmlFor="pitch-slider" className="block text-sm font-medium text-white mb-2">Ton: {pitch.toFixed(1)}</label>
+                        <label htmlFor="pitch-slider" className="block text-sm font-medium text-white mb-2">{content.pitchLabel.replace('{pitch}', pitch.toFixed(1))}</label>
                         <input
                             id="pitch-slider"
                             type="range"
@@ -196,7 +217,7 @@ const TextToAudioPage: React.FC = () => {
                 </div>
 
                 <div className="bg-purple-900/20 border border-purple-700 text-purple-200 text-xs rounded-lg p-3 text-center">
-                    Pour activer le téléchargement, votre navigateur vous demandera de partager l'audio de cet onglet. Nous ne capturons pas votre écran.
+                    {content.downloadHint}
                 </div>
                 
                 {error && <p className="text-red-400 bg-red-900/50 p-3 rounded-lg text-center text-sm">{error}</p>}
@@ -209,25 +230,25 @@ const TextToAudioPage: React.FC = () => {
                     {isProcessing ? (
                         <>
                             <LoadingSpinner />
-                            <span>En cours... (Cliquer pour arrêter)</span>
+                            <span>{content.processingButton}</span>
                         </>
                     ) : (
                        <>
                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg>
-                         <span>Écouter et Préparer le Téléchargement</span>
+                         <span>{content.generateButton}</span>
                        </>
                     )}
                 </button>
                 
                 {downloadUrl && (
                     <div className="text-center border-t border-white/10 pt-6">
-                        <h3 className="text-lg font-medium text-white">Prêt à télécharger!</h3>
+                        <h3 className="text-lg font-medium text-white">{content.downloadReady}</h3>
                         <a 
                             href={downloadUrl}
                             download="mira-ai-audio.webm"
                             className="mt-3 inline-block bg-white text-black px-8 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold"
                         >
-                            Télécharger l'audio
+                            {content.downloadButton}
                         </a>
                     </div>
                 )}

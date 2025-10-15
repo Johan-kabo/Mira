@@ -31,8 +31,34 @@ const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }>
     });
 };
 
+interface VideoGeneratorPageProps {
+    content: {
+        title: string;
+        subtitle: string;
+        promptLabel: string;
+        promptPlaceholder: string;
+        imageLabel: string;
+        uploadFile: string;
+        uploadInstructions: string;
+        uploadHint: string;
+        imagePreview: string;
+        generateButton: string;
+        generatingButton: string;
+        loadingRequest: string;
+        loadingProgress: string;
+        loadingStatus: string;
+        loadingFinalizing: string;
+        errorPrompt: string;
+        errorSize: string;
+        errorApiKey: string;
+        errorDownload: string;
+        errorGeneric: string;
+        resultsPlaceholder: string;
+        resultsTitle: string;
+    }
+}
 
-const VideoGeneratorPage: React.FC = () => {
+const VideoGeneratorPage: React.FC<VideoGeneratorPageProps> = ({ content }) => {
     const [prompt, setPrompt] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -41,14 +67,32 @@ const VideoGeneratorPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-            setError(null);
-        }
+    const processFile = (file: File | null) => {
+        if (!file) return;
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
+        setError(null);
     };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        processFile(event.target.files?.[0] ?? null);
+    };
+
+    const handlePaste = useCallback((event: React.ClipboardEvent) => {
+        const items = event.clipboardData.items;
+        // FIX: Iterate directly over `items` which is a `DataTransferItemList`.
+        // This ensures `item` is correctly typed as `DataTransferItem`, allowing access to `type` and `getAsFile()`.
+        for (const item of items) {
+            if (item.type.includes('image')) {
+                const file = item.getAsFile();
+                if (file) {
+                    processFile(file);
+                    event.preventDefault();
+                    return;
+                }
+            }
+        }
+    }, []);
     
     const handleRemoveImage = () => {
         if (imagePreview) {
@@ -60,14 +104,14 @@ const VideoGeneratorPage: React.FC = () => {
 
     const handleGenerateVideo = useCallback(async () => {
         if (!prompt.trim() && !imageFile) {
-            setError("Please enter a prompt or upload an image to generate a video.");
+            setError(content.errorPrompt);
             return;
         }
 
         if (imageFile) {
             const MAX_SIZE_BYTES = 4.5 * 1024 * 1024;
             if (imageFile.size > MAX_SIZE_BYTES) {
-                setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+                setError(content.errorSize);
                 return;
             }
         }
@@ -75,7 +119,7 @@ const VideoGeneratorPage: React.FC = () => {
         setLoading(true);
         setError(null);
         setVideoUrl(null);
-        setLoadingMessage("Sending request to the model...");
+        setLoadingMessage(content.loadingRequest);
 
         try {
             const generateVideoPayload: {
@@ -101,30 +145,34 @@ const VideoGeneratorPage: React.FC = () => {
 
             let operation = await ai.models.generateVideos(generateVideoPayload);
 
-            setLoadingMessage("Video generation in progress... This may take a few minutes.");
+            setLoadingMessage(content.loadingProgress);
 
             while (!operation.done) {
                 await new Promise(resolve => setTimeout(resolve, 10000)); // Poll every 10 seconds
-                setLoadingMessage("Checking video status... Please wait.");
+                setLoadingMessage(content.loadingStatus);
                 operation = await ai.operations.getVideosOperation({ operation: operation });
             }
 
-            setLoadingMessage("Finalizing your video...");
+            setLoadingMessage(content.loadingFinalizing);
 
             const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
             if (!downloadLink) {
                 throw new Error("Video generation completed, but no video URI was found in the response.");
             }
 
+            // FIX: Use process.env.API_KEY as per the guidelines to fix the 'ImportMeta' error.
             const apiKey = process.env.API_KEY;
             if (!apiKey) {
-                throw new Error("API key is not configured. Please check your setup.");
+                throw new Error(content.errorApiKey);
             }
             
             const response = await fetch(`${downloadLink}&key=${apiKey}`);
             if (!response.ok) {
                 const errorBody = await response.text();
-                throw new Error(`Failed to download video: ${response.statusText}. Details: ${errorBody}`);
+                const errorMessage = content.errorDownload
+                    .replace('{statusText}', response.statusText)
+                    .replace('{errorBody}', errorBody);
+                throw new Error(errorMessage);
             }
             
             const videoBlob = await response.blob();
@@ -132,19 +180,19 @@ const VideoGeneratorPage: React.FC = () => {
             setVideoUrl(url);
 
         } catch (err) {
-            setError(err instanceof Error ? err.message : "An unknown error occurred during video generation.");
+            setError(err instanceof Error ? err.message : content.errorGeneric);
         } finally {
             setLoading(false);
             setLoadingMessage('');
         }
-    }, [prompt, imageFile]);
+    }, [prompt, imageFile, content]);
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" onPaste={handlePaste}>
             <div className="text-center mb-12">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">AI Video Generator</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
-                    Describe a scene, optionally add a source image, and watch it come to life. Create short, high-quality video clips.
+                    {content.subtitle}
                 </p>
             </div>
 
@@ -152,31 +200,32 @@ const VideoGeneratorPage: React.FC = () => {
                 {/* Controls */}
                 <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
                      <div>
-                        <label htmlFor="prompt" className="block text-lg font-medium text-white mb-2">1. Décrivez votre vidéo (optionnel si image)</label>
+                        <label htmlFor="prompt" className="block text-lg font-medium text-white mb-2">{content.promptLabel}</label>
                         <textarea id="prompt" value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3}
                             className="w-full p-2 bg-white/10 text-white rounded-md border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="e.g., 'A neon hologram of a cat driving a sports car at top speed'"></textarea>
+                            placeholder={content.promptPlaceholder}></textarea>
                     </div>
 
                     <div>
-                        <label htmlFor="image-upload" className="block text-lg font-medium text-white mb-2">2. Ajoutez une image (optionnel)</label>
+                        <label htmlFor="image-upload" className="block text-lg font-medium text-white mb-2">{content.imageLabel}</label>
                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
                             <div className="space-y-1 text-center">
                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 <div className="flex text-sm text-gray-400">
                                     <label htmlFor="file-upload" className="relative cursor-pointer bg-gray-800 rounded-md font-medium text-purple-400 hover:text-purple-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 focus-within:ring-purple-500 px-2">
-                                        <span>Upload a file</span>
+                                        <span>{content.uploadFile}</span>
                                         <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={handleFileChange} />
                                     </label>
+                                    <p className="pl-1 hidden sm:block">{content.uploadInstructions}</p>
                                 </div>
-                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
+                                <p className="text-xs text-gray-500">{content.uploadHint}</p>
                             </div>
                         </div>
                     </div>
 
                     {imagePreview && (
                         <div className="space-y-2">
-                            <h3 className="text-lg font-medium text-white">Image Preview</h3>
+                            <h3 className="text-lg font-medium text-white">{content.imagePreview}</h3>
                             <div className="relative group w-32">
                                 <img src={imagePreview} alt="upload preview" className="rounded-md aspect-square object-cover" />
                                 <button onClick={handleRemoveImage} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Remove image">
@@ -187,7 +236,7 @@ const VideoGeneratorPage: React.FC = () => {
                     )}
 
                     <button onClick={handleGenerateVideo} disabled={loading || (!prompt && !imageFile)} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full flex items-center justify-center space-x-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {loading ? 'Generating...' : 'Generate Video'}
+                        {loading ? content.generatingButton : content.generateButton}
                     </button>
                 </div>
 
@@ -201,11 +250,11 @@ const VideoGeneratorPage: React.FC = () => {
                     )}
                     {error && <p className="text-red-400 bg-red-900/50 p-4 rounded-lg text-center">{error}</p>}
                     {!loading && !error && !videoUrl && (
-                        <p className="text-gray-500">Your generated video will appear here.</p>
+                        <p className="text-gray-500">{content.resultsPlaceholder}</p>
                     )}
                     {videoUrl && (
                         <div className="w-full text-center">
-                             <h2 className="text-2xl font-bold text-white mb-4">Your Video is Ready!</h2>
+                             <h2 className="text-2xl font-bold text-white mb-4">{content.resultsTitle}</h2>
                              <div className="relative group">
                                 <video src={videoUrl} controls autoPlay loop className="max-w-full rounded-lg mx-auto" />
                                 <a

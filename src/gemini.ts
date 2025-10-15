@@ -1,4 +1,4 @@
 import { GoogleGenAI } from "@google/genai";
 
-// The API key must be obtained exclusively from the environment variable `process.env.API_KEY`.
+// FIX: Use process.env.API_KEY as per the guidelines to fix the 'ImportMeta' error.
 export const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });

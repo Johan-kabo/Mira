@@ -21,32 +21,69 @@ const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }>
     });
 };
 
-const CreativeUpscalerPage: React.FC = () => {
+interface CreativeUpscalerPageProps {
+    content: {
+        title: string;
+        subtitle: string;
+        uploadHint: string;
+        uploadSelected: string;
+        fileTypes: string;
+        upscaleButton: string;
+        upscalingButton: string;
+        errorUpload: string;
+        errorSize: string;
+        resultsPlaceholder: string;
+        originalTitle: string;
+        resultTitle: string;
+        downloadButton: string;
+        waiting: string;
+    }
+}
+
+const CreativeUpscalerPage: React.FC<CreativeUpscalerPageProps> = ({ content }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [originalImage, setOriginalImage] = useState<string | null>(null);
     const [resultImage, setResultImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImageFile(file);
-            setOriginalImage(URL.createObjectURL(file));
-            setResultImage(null);
-            setError(null);
-        }
+    const processFile = (file: File | null) => {
+        if (!file) return;
+        setImageFile(file);
+        setOriginalImage(URL.createObjectURL(file));
+        setResultImage(null);
+        setError(null);
     };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        processFile(event.target.files?.[0] ?? null);
+    };
+
+    const handlePaste = useCallback((event: React.ClipboardEvent) => {
+        const items = event.clipboardData.items;
+        // FIX: Iterate directly over `items` which is a `DataTransferItemList`.
+        // This ensures `item` is correctly typed as `DataTransferItem`, allowing access to `type` and `getAsFile()`.
+        for (const item of items) {
+            if (item.type.includes('image')) {
+                const file = item.getAsFile();
+                if (file) {
+                    processFile(file);
+                    event.preventDefault();
+                    return;
+                }
+            }
+        }
+    }, []);
 
     const handleUpscaleImage = useCallback(async () => {
         if (!imageFile) {
-            setError("Please upload an image first.");
+            setError(content.errorUpload);
             return;
         }
 
         const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; 
         if (imageFile.size > MAX_SIZE_BYTES) {
-            setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+            setError(content.errorSize);
             return;
         }
 
@@ -61,10 +98,10 @@ const CreativeUpscalerPage: React.FC = () => {
             const textPart = { text: prompt };
 
             const response: GenerateContentResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image-preview',
+                model: 'gemini-2.5-flash-image',
                 contents: { parts: [imagePart, textPart] },
                 config: {
-                    responseModalities: [Modality.IMAGE, Modality.TEXT],
+                    responseModalities: [Modality.IMAGE],
                 },
             });
             
@@ -88,14 +125,14 @@ const CreativeUpscalerPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [imageFile]);
+    }, [imageFile, content]);
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" onPaste={handlePaste}>
             <div className="text-center mb-12">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Creative AI Upscaler</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
-                    Transform your low-resolution images into stunning, high-definition masterpieces with a single click.
+                    {content.subtitle}
                 </p>
             </div>
 
@@ -106,15 +143,15 @@ const CreativeUpscalerPage: React.FC = () => {
                          <label htmlFor="file-upload" className="relative cursor-pointer w-full flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md hover:border-purple-500 transition-colors">
                             <div className="space-y-1 text-center">
                                 <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                <span className="text-purple-400 font-medium">{imageFile ? `${imageFile.name} selected` : 'Click to upload an image'}</span>
-                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
+                                <span className="text-purple-400 font-medium">{imageFile ? content.uploadSelected.replace('{name}', imageFile.name) : content.uploadHint}</span>
+                                <p className="text-xs text-gray-500">{content.fileTypes}</p>
                                 <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={handleFileChange} />
                             </div>
                         </label>
                     </div>
 
                     <button onClick={handleUpscaleImage} disabled={loading || !imageFile} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full flex items-center justify-center space-x-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {loading ? 'Upscaling...' : 'Upscale Image'}
+                        {loading ? content.upscalingButton : content.upscaleButton}
                     </button>
                 </div>
                 
@@ -123,24 +160,24 @@ const CreativeUpscalerPage: React.FC = () => {
                     {loading && <div className="flex justify-center"><LoadingSpinner /></div>}
                     {error && <p className="text-red-400 bg-red-900/50 p-4 rounded-lg text-center">{error}</p>}
                      {!loading && !error && !originalImage && (
-                        <p className="text-gray-500 text-center min-h-[300px] flex items-center justify-center">The comparison will appear here.</p>
+                        <p className="text-gray-500 text-center min-h-[300px] flex items-center justify-center">{content.resultsPlaceholder}</p>
                     )}
                     {originalImage && (
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="text-center">
-                                <h2 className="text-2xl font-bold text-white mb-4">Original</h2>
+                                <h2 className="text-2xl font-bold text-white mb-4">{content.originalTitle}</h2>
                                 <img src={originalImage} alt="Original" className="rounded-lg mx-auto" />
                             </div>
                             <div className="text-center">
-                                <h2 className="text-2xl font-bold text-white mb-4">Upscaled Result</h2>
+                                <h2 className="text-2xl font-bold text-white mb-4">{content.resultTitle}</h2>
                                 {resultImage ? (
                                     <div>
                                         <img src={resultImage} alt="Upscaled" className="rounded-lg mx-auto" />
-                                        <a href={resultImage} download={`upscaled-${Date.now()}.png`} className="mt-6 inline-block bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">Download Image</a>
+                                        <a href={resultImage} download={`upscaled-${Date.now()}.png`} className="mt-6 inline-block bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">{content.downloadButton}</a>
                                     </div>
                                 ) : (
                                     <div className="rounded-lg bg-black/20 h-full flex items-center justify-center min-h-[300px]">
-                                        <p className="text-gray-500">Waiting for result...</p>
+                                        <p className="text-gray-500">{content.waiting}</p>
                                     </div>
                                 )}
                             </div>

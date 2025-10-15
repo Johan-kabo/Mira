@@ -20,32 +20,70 @@ const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }>
     });
 };
 
-const ImageToPromptPage: React.FC = () => {
+interface ImageToPromptPageProps {
+    content: {
+        title: string;
+        subtitle: string;
+        uploadLabel: string;
+        uploadFile: string;
+        uploadInstructions: string;
+        uploadHint: string;
+        preview: string;
+        generateButton: string;
+        analyzingButton: string;
+        errorUpload: string;
+        errorSize: string;
+        resultsPlaceholder: string;
+        resultsTitle: string;
+        copyButton: string;
+        copySuccess: string;
+    }
+}
+
+const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-            setGeneratedPrompt(null);
-            setError(null);
-        }
+    const processFile = (file: File | null) => {
+        if (!file) return;
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
+        setGeneratedPrompt(null);
+        setError(null);
     };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        processFile(event.target.files?.[0] ?? null);
+    };
+
+    const handlePaste = useCallback((event: React.ClipboardEvent) => {
+        const items = event.clipboardData.items;
+        // FIX: Iterate directly over `items` which is a `DataTransferItemList`.
+        // This ensures `item` is correctly typed as `DataTransferItem`, allowing access to `type` and `getAsFile()`.
+        for (const item of items) {
+            if (item.type.includes('image')) {
+                const file = item.getAsFile();
+                if (file) {
+                    processFile(file);
+                    event.preventDefault();
+                    return;
+                }
+            }
+        }
+    }, []);
 
     const handleGeneratePrompt = useCallback(async () => {
         if (!imageFile) {
-            setError("Please upload an image first.");
+            setError(content.errorUpload);
             return;
         }
 
         const MAX_SIZE_BYTES = 4.5 * 1024 * 1024; 
         if (imageFile.size > MAX_SIZE_BYTES) {
-            setError(`Image size is too large (max 4.5MB). Please upload a smaller file.`);
+            setError(content.errorSize);
             return;
         }
 
@@ -73,21 +111,21 @@ const ImageToPromptPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [imageFile]);
+    }, [imageFile, content]);
     
     const handleCopyPrompt = () => {
         if (generatedPrompt) {
             navigator.clipboard.writeText(generatedPrompt);
-            alert("Prompt copied to clipboard!");
+            alert(content.copySuccess);
         }
     };
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto" onPaste={handlePaste}>
             <div className="text-center mb-12">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Image to Prompt Generator</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">{content.title}</h1>
                 <p className="text-gray-400 max-w-2xl mx-auto mt-4">
-                    Upload an image and let our AI analyze it to generate a detailed, creative text prompt.
+                    {content.subtitle}
                 </p>
             </div>
 
@@ -95,29 +133,29 @@ const ImageToPromptPage: React.FC = () => {
                 {/* Controls */}
                 <div className="bg-[#1c162d]/50 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
                     <div>
-                        <label htmlFor="image-upload" className="block text-lg font-medium text-white mb-2">Upload Image</label>
+                        <label htmlFor="image-upload" className="block text-lg font-medium text-white mb-2">{content.uploadLabel}</label>
                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
                             <div className="space-y-1 text-center">
                                 <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 <div className="flex text-sm text-gray-400">
                                     <label htmlFor="file-upload" className="relative cursor-pointer bg-gray-800 rounded-md font-medium text-purple-400 hover:text-purple-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 focus-within:ring-purple-500 px-2">
-                                        <span>Upload a file</span>
+                                        <span>{content.uploadFile}</span>
                                         <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={handleFileChange} />
                                     </label>
-                                    <p className="pl-1 hidden sm:block">or drag and drop</p>
+                                    <p className="pl-1 hidden sm:block">{content.uploadInstructions}</p>
                                 </div>
-                                <p className="text-xs text-gray-500">PNG, JPG up to 4.5MB</p>
+                                <p className="text-xs text-gray-500">{content.uploadHint}</p>
                             </div>
                         </div>
                     </div>
                      {imagePreview && (
                         <div>
-                            <h3 className="text-lg font-medium text-white mb-2">Image Preview</h3>
+                            <h3 className="text-lg font-medium text-white mb-2">{content.preview}</h3>
                             <img src={imagePreview} alt="Original preview" className="rounded-lg max-h-60 w-auto mx-auto" />
                         </div>
                     )}
                     <button onClick={handleGeneratePrompt} disabled={loading || !imageFile} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full flex items-center justify-center space-x-2 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {loading ? 'Analyzing...' : 'Generate Prompt'}
+                        {loading ? content.analyzingButton : content.generateButton}
                     </button>
                 </div>
 
@@ -126,13 +164,13 @@ const ImageToPromptPage: React.FC = () => {
                     {loading && <LoadingSpinner />}
                     {error && <p className="text-red-400 bg-red-900/50 p-4 rounded-lg text-center">{error}</p>}
                     {!loading && !error && !generatedPrompt && (
-                        <p className="text-gray-500">Your generated prompt will appear here.</p>
+                        <p className="text-gray-500">{content.resultsPlaceholder}</p>
                     )}
                     {generatedPrompt && (
                         <div className="w-full text-left">
-                            <h2 className="text-2xl font-bold text-white mb-4 text-center">Generated Prompt</h2>
+                            <h2 className="text-2xl font-bold text-white mb-4 text-center">{content.resultsTitle}</h2>
                             <p className="text-gray-300 bg-gray-900/50 p-4 rounded-lg whitespace-pre-wrap break-words">{generatedPrompt}</p>
-                            <button onClick={handleCopyPrompt} className="mt-6 w-full bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">Copy Prompt</button>
+                            <button onClick={handleCopyPrompt} className="mt-6 w-full bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">{content.copyButton}</button>
                         </div>
                     )}
                 </div>
