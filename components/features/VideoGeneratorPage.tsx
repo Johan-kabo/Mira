@@ -150,7 +150,7 @@ const VideoGeneratorPage: React.FC<VideoGeneratorPageProps> = ({ content }) => {
             while (!operation.done) {
                 await new Promise(resolve => setTimeout(resolve, 10000)); // Poll every 10 seconds
                 setLoadingMessage(content.loadingStatus);
-                operation = await ai.operations.getVideosOperation({ operation: operation });
+                operation = await ai.operations.getVideosOperation({operation: operation});
             }
 
             setLoadingMessage(content.loadingFinalizing);
@@ -160,7 +160,8 @@ const VideoGeneratorPage: React.FC<VideoGeneratorPageProps> = ({ content }) => {
                 throw new Error("Video generation completed, but no video URI was found in the response.");
             }
 
-            // FIX: Use process.env.API_KEY as per the guidelines to fix the 'ImportMeta' error.
+            // FIX: Per coding guidelines, API key must be retrieved from process.env.API_KEY.
+            // Utiliser import.meta.env.VITE_API_KEY pour accéder à la clé API côté client avec Vite
             const apiKey = process.env.API_KEY;
             if (!apiKey) {
                 throw new Error(content.errorApiKey);
