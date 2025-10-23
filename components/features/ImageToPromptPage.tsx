@@ -6,6 +6,17 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
 );
 
+const LoadingSpinnerSmall = () => (
+    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+);
+
+const TranslateIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.704 4.318l1.262 1.262m5.859 5.859l1.262 1.262M5.636 18.364l1.262-1.262m5.859-5.859l1.262-1.262M12 22a10 10 0 110-20 10 10 0 010 20z" />
+    </svg>
+);
+
+
 const fileToBase64 = (file: File): Promise<{ base64: string; mimeType: string }> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -37,6 +48,9 @@ interface ImageToPromptPageProps {
         resultsTitle: string;
         copyButton: string;
         copySuccess: string;
+        translateButton: string;
+        translatingButton: string;
+        translateBackButton: string;
     }
 }
 
@@ -44,15 +58,20 @@ const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+    const [originalPrompt, setOriginalPrompt] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isTranslating, setIsTranslating] = useState(false);
+    const [isTranslated, setIsTranslated] = useState(false);
 
     const processFile = (file: File | null) => {
         if (!file) return;
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
         setGeneratedPrompt(null);
+        setOriginalPrompt(null);
         setError(null);
+        setIsTranslated(false);
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +109,8 @@ const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
         setLoading(true);
         setError(null);
         setGeneratedPrompt(null);
+        setOriginalPrompt(null);
+        setIsTranslated(false);
         try {
             const { base64, mimeType } = await fileToBase64(imageFile);
             
@@ -104,7 +125,9 @@ const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
                 model: 'gemini-2.5-flash',
                 contents: { parts: [imagePart, textPart] },
             });
-            setGeneratedPrompt(response.text);
+            const promptText = response.text;
+            setGeneratedPrompt(promptText);
+            setOriginalPrompt(promptText);
 
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
@@ -119,6 +142,37 @@ const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
             alert(content.copySuccess);
         }
     };
+
+    const handleTranslatePrompt = useCallback(async () => {
+        if (!originalPrompt) return;
+
+        // If it's already translated (to French), revert to English
+        if (isTranslated) {
+            setGeneratedPrompt(originalPrompt);
+            setIsTranslated(false);
+            return;
+        }
+
+        // Otherwise, translate from English to French
+        setIsTranslating(true);
+        setError(null);
+        try {
+            // Use originalPrompt for consistent translation source
+            const translateRequest = `Translate the following English text to French: "${originalPrompt}"`;
+            
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: translateRequest,
+            });
+
+            setGeneratedPrompt(response.text);
+            setIsTranslated(true);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unknown translation error occurred.");
+        } finally {
+            setIsTranslating(false);
+        }
+    }, [originalPrompt, isTranslated]);
 
     return (
         <div className="max-w-7xl mx-auto" onPaste={handlePaste}>
@@ -169,8 +223,20 @@ const ImageToPromptPage: React.FC<ImageToPromptPageProps> = ({ content }) => {
                     {generatedPrompt && (
                         <div className="w-full text-left">
                             <h2 className="text-2xl font-bold text-white mb-4 text-center">{content.resultsTitle}</h2>
-                            <p className="text-gray-300 bg-gray-900/50 p-4 rounded-lg whitespace-pre-wrap break-words">{generatedPrompt}</p>
-                            <button onClick={handleCopyPrompt} className="mt-6 w-full bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">{content.copyButton}</button>
+                            <div className="relative">
+                                <p className="text-gray-300 bg-gray-900/50 p-4 pr-12 rounded-lg whitespace-pre-wrap break-words">{generatedPrompt}</p>
+                                <button 
+                                    onClick={handleTranslatePrompt} 
+                                    disabled={isTranslating}
+                                    className="absolute top-3 right-3 bg-purple-600/50 text-white p-2 rounded-full hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title={isTranslated ? content.translateBackButton : content.translateButton}
+                                >
+                                    {isTranslating ? <LoadingSpinnerSmall /> : <TranslateIcon />}
+                                </button>
+                            </div>
+                             <div className="mt-6">
+                                <button onClick={handleCopyPrompt} className="w-full bg-white text-black px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors font-semibold">{content.copyButton}</button>
+                            </div>
                         </div>
                     )}
                 </div>

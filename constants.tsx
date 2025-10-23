@@ -293,6 +293,9 @@ export const translations = {
             resultsTitle: "Generated Prompt",
             copyButton: "Copy Prompt",
             copySuccess: "Prompt copied to clipboard!",
+            translateButton: "Translate to French",
+            translatingButton: "Translating...",
+            translateBackButton: "Translate back to English",
         },
         aiImageEditor: {
             title: "AI Image Editor",
@@ -535,6 +538,9 @@ export const translations = {
             resultsTitle: "Prompt Généré",
             copyButton: "Copier le Prompt",
             copySuccess: "Prompt copié dans le presse-papiers !",
+            translateButton: "Traduire en Français",
+            translatingButton: "Traduction...",
+            translateBackButton: "Retraduire en Anglais",
         },
         aiImageEditor: {
             title: "Éditeur d'Images IA",
